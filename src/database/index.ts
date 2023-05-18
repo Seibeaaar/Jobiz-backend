@@ -1,7 +1,4 @@
-import * as admin from "firebase-admin";
-import {v4} from "uuid";
-
-const firestore = admin.firestore();
+import {firestore} from "..";
 
 const Database = {
   get: async (collection: string, id: string) => {
@@ -9,12 +6,8 @@ const Database = {
     if (!snapshot.exists) return null;
     return snapshot.data();
   },
-  create: async (collection: string, data: object, id?: string) => {
-    const collectionRef = firestore.collection(collection);
-    const docId = id ?? v4();
-    const ref = collectionRef.doc(docId);
-    await ref.set(data);
-    const newDoc = await Database.get(collection, docId);
+  create: async (collection: string, data: object) => {
+    const newDoc = await firestore.collection(collection).add(data);
     return newDoc;
   },
   delete: async (collection: string, id: string) => {

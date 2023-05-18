@@ -1,17 +1,19 @@
-import * as express from 'express';
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import * as express from "express";
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
 import * as bodyParser from "body-parser";
-import helmet from 'helmet';
+import helmet from "helmet";
+import users from "./routes/user";
 
 admin.initializeApp(functions.config().firebase);
 
 const app = express();
-const main = express();
+app.use(helmet());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
-main.use('/api/v1', app);
-main.use(bodyParser.json());
-main.use(helmet());
-main.use(bodyParser.urlencoded({ extended: false }));
+export const firestore = admin.firestore();
 
-export const api = functions.https.onRequest(main);
+app.use("/users", users);
+
+export const api = functions.https.onRequest(app);
